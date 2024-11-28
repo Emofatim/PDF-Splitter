@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>PDF Splitter</h2>
+<form action="/" method="post" enctype="multipart/form-data" id="upload-form">
+  <div class="upload-area" id="upload-area">
+    <input type="file" id="file-input" name="file" class="file-input" />
+    <label for="file-input" class="upload-box">
+      <img src="{{ url_for('static', filename='images/pdf-icon.png') }}" alt="PDF Icon" class="pdf-icon">
+      <button type="button" id="browse-button" class="browse-button">Browse</button>
+      <p>or drop file here</p>
+    </label>
+  </div>
+  <div id="file-details" style="display: none;">
+    <p id="uploaded-file-name"></p>
+    <p id="uploaded-file-pages"></p>
+  </div>
+  <button type="submit" class="proceed-button" id="proceed-button">Proceed</button>
+</form>
+<div id="progress-section" style="display: none;">
+  <p>Processing...</p>
+  <progress id="progress-bar" value="0" max="100"></progress>
+</div>
+{% if download_url %}
+  <a href="{{ download_url }}" class="proceed-button">Download Processed File</a>
+  <a href="{{ url_for('index') }}" class="proceed-button">Upload a New File</a>
+{% endif %}
+{% endblock %}
