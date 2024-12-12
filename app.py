@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 import os
 from werkzeug.utils import secure_filename
 import PyPDF2
+from PyPDF2 import PdfReader
 from collections import defaultdict
 import zipfile
 
@@ -35,7 +36,7 @@ def split_pdf_by_name(input_pdf, output_folder):
             name_to_pages[name].append(page_num)
         
         # Generate separate PDFs for each group
-        zip_file_path = os.path.join(output_folder, 'grouped_pdfs.zip')
+        zip_file_path = os.path.join(output_folder, 'Split-pdfs.zip')
         with zipfile.ZipFile(zip_file_path, 'w') as zipf:
             for name, page_nums in name_to_pages.items():
                 pdf_writer = PyPDF2.PdfWriter()
@@ -52,24 +53,32 @@ def split_pdf_by_name(input_pdf, output_folder):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        if 'file' not in request.files:
-            flash('No file part', 'error')
+        # Check if a file was uploaded
+        if 'file' not in request.files or request.files['file'].filename == '':
+            flash('Error: No file uploaded. Please upload a valid PDF.', 'error')
             return redirect(request.url)
 
         file = request.files['file']
-        if file.filename == '':
-            flash('No selected file', 'error')
-            return redirect(request.url)
         
+        # Validate file type
+        if not file.filename.endswith('.pdf') or file.mimetype != 'application/pdf':
+            flash('Error: Only PDF files are allowed.', 'error')
+            return redirect(request.url)
+
         # Save uploaded file
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
 
+        pdf_name = file.filename
+        pdf_reader = PdfReader(file_path)
+        page_count = len(pdf_reader.pages)
+
         # Process PDF
         output_zip = split_pdf_by_name(file_path, app.config['OUTPUT_FOLDER'])
         flash('File processed successfully! Download the result below.', 'success')
-        return render_template('index.html', download_url=url_for('download_file', filename=os.path.basename(output_zip)))
+        return render_template('result.html', download_url=url_for('download_file', filename=os.path.basename(output_zip)),
+                               pdf_name=pdf_name, page_count=page_count)
 
     return render_template('index.html')
 

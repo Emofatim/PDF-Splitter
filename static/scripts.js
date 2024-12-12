@@ -2,10 +2,12 @@ const uploadArea = document.getElementById("upload-area");
 const fileInput = document.getElementById("file-input");
 const browseButton = document.getElementById("browse-button");
 const fileDetails = document.getElementById("file-details");
+const fileError = document.getElementById("file-error"); 
 const fileNameDisplay = document.getElementById("uploaded-file-name");
 const filePagesDisplay = document.getElementById("uploaded-file-pages");
 const progressSection = document.getElementById("progress-section");
 const progressBar = document.getElementById("progress-bar");
+const proceedButton = document.querySelector(".proceed-button");
 
 browseButton.addEventListener("click", () => fileInput.click());
 
@@ -27,7 +29,18 @@ fileInput.addEventListener("change", showFileDetails);
 
 function showFileDetails() {
   const file = fileInput.files[0];
+  fileError.textContent = "";
+
   if (file) {
+    const fileType = file.type;
+
+    if (fileType !== "application/pdf") {
+      fileError.textContent = "Error: Only PDF files are allowed.";
+      fileInput.value = ""; // Clear the input
+      fileDetails.style.display = "none"; // Hide file details
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       fetch(`/get_pdf_details`, {
@@ -36,9 +49,10 @@ function showFileDetails() {
       })
         .then((response) => response.json())
         .then((data) => {
-          fileNameDisplay.textContent = `File Name: ${file.name}`;
-          filePagesDisplay.textContent = `Number of Pages: ${data.pages}`;
+          fileNameDisplay.innerHTML = `<strong>File Name:</strong> ${file.name}`;
+          filePagesDisplay.innerHTML = `<strong>Number of Pages:</strong> ${data.pages}`; 
           fileDetails.style.display = "block";
+          uploadArea.style.display = "none";
         });
     };
     reader.readAsDataURL(file);
@@ -47,6 +61,9 @@ function showFileDetails() {
 
 document.getElementById("upload-form").addEventListener("submit", () => {
   progressSection.style.display = "block";
+  fileDetails.style.display = "block";
+  uploadArea.style.display = "none";
+ // window.alert("processed");
   let progress = 0;
   const interval = setInterval(() => {
     progress = Math.min(progress + 10, 100);
@@ -55,55 +72,16 @@ document.getElementById("upload-form").addEventListener("submit", () => {
   }, 200);
 });
 
-// Function to handle file upload
-function handleFileUpload(input) {
-    const fileInfo = document.getElementById("file-info");
-    const browseButton = document.getElementById("browse-button");
-    const dropText = document.getElementById("drop-text");
-  
-    if (input.files.length > 0) {
-      const fileName = input.files[0].name;
-      fileInfo.textContent = `Uploaded: ${fileName}`;
-      fileInfo.style.display = "block"; // Show file name
-      browseButton.style.display = "none"; // Hide browse button
-      dropText.style.display = "none"; // Hide drop text
-    }
-  }
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    const fileInput = document.getElementById("file-input");
-    const uploadArea = document.getElementById("upload-area");
-    const fileInfo = document.getElementById("file-info");
-    const fileNameElement = document.getElementById("uploaded-file-name");
-    const pageCountElement = document.getElementById("page-count");
-    const progressSection = document.getElementById("progress-section");
-  
-    fileInput.addEventListener("change", async () => {
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append("file", file);
-  
-        // Send file to server for page count
-        const response = await fetch("/get_pdf_details", {
-          method: "POST",
-          body: formData,
-        });
-        const result = await response.json();
-  
-        // Update UI with file details
-        fileNameElement.textContent = file.name;
-        pageCountElement.textContent = result.pages;
-        uploadArea.style.display = "none";
-        fileInfo.style.display = "block";
-      }
-    });
-  
-    // Show progress bar on "Proceed" click
-    const proceedButton = document.querySelector(".proceed-button");
-    proceedButton.addEventListener("click", () => {
-      progressSection.style.display = "block";
-    });
-  });
+proceedButton.addEventListener("click", (event) => {
+  const file = fileInput.files[0];
+  const fileError = document.getElementById("file-error"); // Placeholder for error messages
 
-  
+  // Clear previous error messages
+  fileError.textContent = "";
+
+  if (!file) {
+    fileError.textContent = "Error: No file selected. Please upload a PDF.";
+    event.preventDefault(); // Prevent form submission
+    return;
+  }
+});

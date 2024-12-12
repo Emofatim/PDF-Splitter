@@ -57,7 +57,7 @@
   h2 {
     font-size: 2rem;
     color: #19315b;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
   
   .upload-area {
@@ -66,6 +66,7 @@
     border: 2px dashed #19315b;
     border-radius: 10px;
     position: relative;
+    margin-bottom: 2rem;
   }
   
   .upload-box {
@@ -114,7 +115,7 @@
       border-radius: 5px;
       font-size: 1rem;
       cursor: pointer;
-      margin: 3rem;
+      margin: 1rem;
   }
   
   .proceed-button:hover {
@@ -136,6 +137,11 @@
     font-size: 1rem;
     color: #19315b;
     margin-bottom: 10px;
+  }
+
+  #uploaded-file-pages {
+    font-size: 1rem;
+    margin-bottom: 50px;
   }
   
   .upload-area.dragging {
@@ -162,6 +168,20 @@
     margin-top: 1rem;
     text-align: center;
   }
+
+  a:link {
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  #file-error {
+    color: red; 
+    margin-top: 10px;
+  }
   
   /* Responsive Design */
   @media (max-width: 768px) {
@@ -178,4 +198,29 @@
       padding: 0.4rem 0.8rem;
     }
   }
+
+  @media (max-width: 480px) {
+    .header {
+      padding: 10px 20px;
+    }
+  
+    h2 {
+      font-size: 1.2rem;
+    }
+  
+    .upload-area {
+      padding: 1rem;
+    }
+  
+    .browse-button, .proceed-button {
+      font-size: 0.7rem;
+      padding: 0.4rem;
+    }
+
+    .logo h1, .logo .pdf {
+      font-size: 1.2rem;
+    }
+  }
+
+  
   

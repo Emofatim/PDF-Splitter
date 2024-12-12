@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>PDF Splitter</h2>
+
+{% if download_url %}
+  <p id="uploaded-file-name"><strong>File Name:</strong> {{ pdf_name }}</p>
+  <p id="uploaded-file-pages"><strong>Number of Pages:</strong> {{ page_count }}</p>
+  <a href="{{ download_url }}" class="proceed-button">Download Processed File</a>
+  <a href="{{ url_for('index') }}" class="proceed-button">Upload a New File</a>
+{% endif %}
+{% endblock %}

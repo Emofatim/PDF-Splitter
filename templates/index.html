@@ -10,18 +10,15 @@
       <p>or drop file here</p>
     </label>
   </div>
+  <div id="file-error"></div>
   <div id="file-details" style="display: none;">
     <p id="uploaded-file-name"></p>
     <p id="uploaded-file-pages"></p>
-  </div>
+  </div> 
   <button type="submit" class="proceed-button" id="proceed-button">Proceed</button>
 </form>
 <div id="progress-section" style="display: none;">
   <p>Processing...</p>
   <progress id="progress-bar" value="0" max="100"></progress>
 </div>
-{% if download_url %}
-  <a href="{{ download_url }}" class="proceed-button">Download Processed File</a>
-  <a href="{{ url_for('index') }}" class="proceed-button">Upload a New File</a>
-{% endif %}
 {% endblock %}
